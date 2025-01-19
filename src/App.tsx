@@ -43,6 +43,7 @@ export const App: React.FC = () => {
           setErrorMessage(undefined);
         }, 3000);
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
