@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import { Todo } from '../types/Todo';
 
 type Props = {
@@ -19,7 +20,9 @@ export const Header: React.FC<Props> = ({
     {/* this button should have `active` class only if all todos are completed */}
     <button
       type="button"
-      className={`todoapp__toggle-all ${todos.find(todo => !todo.completed) ? '' : 'active'}`}
+      className={classNames('todoapp__toggle-all', {
+        active: !todos.find(todo => !todo.completed),
+      })}
       data-cy="ToggleAllButton"
       onClick={handleToggleAllButton}
     />

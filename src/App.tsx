@@ -5,6 +5,13 @@ import { Todo } from './types/Todo';
 import { Header } from './components/Header';
 import { TodoList } from './components/TodoList';
 import { Footer } from './components/Footer';
+import classNames from 'classnames';
+
+export enum TodoType {
+  all = 'All',
+  active = 'Active',
+  completed = 'Completed',
+}
 
 export const App: React.FC = () => {
   enum Error {
@@ -18,11 +25,9 @@ export const App: React.FC = () => {
   const [title, setTitle] = useState('');
   const [changedTitle, setChangedTitle] = useState('');
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [filteredTodos, setFilteredTodos] = useState<Todo[]>([]);
+
   const [loadingTodos, setLoadingTodos] = useState<Todo[] | null>([]);
-  const [todosType, setTodosType] = useState<'all' | 'active' | 'completed'>(
-    'all',
-  );
+  const [todosType, setTodosType] = useState<TodoType>(TodoType.all);
   const [isAllTodoCompleted, setIsAllTodoCompleted] = useState(false);
   const [completedTodosCount, setCompletedTodosCount] = useState(0);
   const [changingTodo, setChangingTodo] = useState<Todo | undefined>(undefined);
@@ -35,7 +40,6 @@ export const App: React.FC = () => {
       .getTodos()
       .then(fetchedTodos => {
         setTodos(fetchedTodos);
-        setFilteredTodos(fetchedTodos);
       })
       .catch(() => {
         setErrorMessage(Error.loadError);
@@ -47,17 +51,19 @@ export const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    switch (todosType) {
-      case 'active':
-        setFilteredTodos(todos.filter(todo => !todo.completed));
-        break;
-      case 'completed':
-        setFilteredTodos(todos.filter(todo => todo.completed));
-        break;
-      case 'all':
-      default:
-        setFilteredTodos(todos);
-    }
+    todoServise.getTodos().then(fetchedTodos => {
+      switch (todosType) {
+        case TodoType.active:
+          setTodos(fetchedTodos.filter(todo => !todo.completed));
+          break;
+        case TodoType.completed:
+          setTodos(fetchedTodos.filter(todo => todo.completed));
+          break;
+        case TodoType.all:
+        default:
+          setTodos(fetchedTodos);
+      }
+    });
 
     setCompletedTodosCount(
       todos.length - todos.filter(todo => todo.completed).length,
@@ -255,7 +261,7 @@ export const App: React.FC = () => {
 
         <section className="todoapp__main" data-cy="TodoList">
           <TodoList
-            filteredTodos={filteredTodos}
+            todos={todos}
             completeTodo={completeTodo}
             changingTodo={changingTodo}
             setChangingTodo={setChangingTodo}
@@ -284,7 +290,12 @@ export const App: React.FC = () => {
       {/* Add the 'hidden' class to hide the message smoothly */}
       <div
         data-cy="ErrorNotification"
-        className={`notification is-danger is-light has-text-weight-normal ${errorMessage ? '' : 'hidden'}`}
+        className={classNames(
+          'notification is-danger is-light has-text-weight-normal',
+          {
+            hidden: !errorMessage,
+          },
+        )}
       >
         <button
           data-cy="HideErrorButton"

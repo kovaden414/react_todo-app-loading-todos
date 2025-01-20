@@ -1,7 +1,10 @@
+import classNames from 'classnames';
+import { TodoType } from '../App';
+
 type Props = {
   completedTodosCount: number;
-  todosType: 'all' | 'active' | 'completed';
-  setTodosType: (todosType: 'all' | 'active' | 'completed') => void;
+  todosType: TodoType;
+  setTodosType: (todosType: TodoType) => void;
   clearCompletedTodo: () => void;
 };
 
@@ -18,32 +21,21 @@ export const Footer: React.FC<Props> = ({
 
     {/* Active link should have the 'selected' class */}
     <nav className="filter" data-cy="Filter">
-      <a
-        href="#/"
-        className={`filter__link ${todosType === 'all' ? 'selected' : ''}`}
-        data-cy="FilterLinkAll"
-        onClick={() => setTodosType('all')}
-      >
-        All
-      </a>
-
-      <a
-        href="#/active"
-        className={`filter__link ${todosType === 'active' ? 'selected' : ''}`}
-        data-cy="FilterLinkActive"
-        onClick={() => setTodosType('active')}
-      >
-        Active
-      </a>
-
-      <a
-        href="#/completed"
-        className={`filter__link ${todosType === 'completed' ? 'selected' : ''}`}
-        data-cy="FilterLinkCompleted"
-        onClick={() => setTodosType('completed')}
-      >
-        Completed
-      </a>
+      {Object.values(TodoType).map(type => {
+        return (
+          <a
+            href="#/"
+            className={classNames('filter__link', {
+              selected: todosType === type,
+            })}
+            data-cy={`FilterLink${type}`}
+            key={type}
+            onClick={() => setTodosType(type)}
+          >
+            {type}
+          </a>
+        );
+      })}
     </nav>
 
     {/* this button should be disabled if there are no completed todos */}

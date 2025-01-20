@@ -2,7 +2,7 @@ import { Todo } from '../types/Todo';
 import { TodoInfo } from './TodoInfo';
 
 type Props = {
-  filteredTodos: Todo[];
+  todos: Todo[];
   completeTodo: (todoId: number) => void;
   changingTodo: Todo | undefined;
   setChangingTodo: (tochangingTododoId: Todo | undefined) => void;
@@ -14,7 +14,7 @@ type Props = {
 };
 
 export const TodoList: React.FC<Props> = ({
-  filteredTodos,
+  todos,
   completeTodo,
   changingTodo,
   setChangingTodo,
@@ -25,7 +25,7 @@ export const TodoList: React.FC<Props> = ({
   loadingTodos,
 }) => (
   <>
-    {filteredTodos.map(todo => {
+    {todos.map(todo => {
       return (
         <TodoInfo
           todo={todo}
